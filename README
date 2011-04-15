@@ -52,7 +52,7 @@ const REDIRECT_URI = 'http://url/of/this.php';
 const AUTHORIZATION_ENDPOINT = 'https://graph.facebook.com/oauth/authorize';
 const TOKEN_ENDPOINT = 'https://graph.facebook.com/oauth/access_token';
 
-$client = new OAuth2\Client('CLIENT_ID', 'CLIENT_SECRET');
+$client = new OAuth2\Client(CLIENT_ID, CLIENT_SECRET);
 if (!isset($_GET['code']))
 {
     $auth_url = $client->getAuthenticationUrl(AUTHORIZATION_ENDPOINT, REDIRECT_URI);
