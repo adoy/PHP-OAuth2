@@ -118,6 +118,10 @@ class Client
      */
     public function __construct($client_id, $client_secret, $client_auth = self::AUTH_TYPE_URI)
     {
+        if (!extension_loaded('curl')) {
+            throw new Exception('The PHP exention curl must be installed to use this library.');
+        }
+        
         $this->client_id     = $client_id;
         $this->client_secret = $client_secret;
         $this->client_auth   = $client_auth;
@@ -360,8 +364,6 @@ class Client
             CURLOPT_CUSTOMREQUEST  => $http_method
         );
 
-        $parameters = http_build_query($parameters, null, '&');
-
         switch($http_method)
         {
             case self::HTTP_METHOD_POST:
@@ -375,7 +377,7 @@ class Client
                 /* No break */
             case self::HTTP_METHOD_DELETE:
             case self::HTTP_METHOD_GET:
-                $url .= '?' . $parameters;
+                $url .= '?' . http_build_query($parameters, null, '&');
                 break;
             default:
                 break;
@@ -387,7 +389,7 @@ class Client
         {
             $header = array();
             foreach($http_headers as $key => $parsed_urlalue) {
-                $header[] .= "$key: $parsed_urlalue\r\n";
+                $header[] = "$key: $parsed_urlalue";
             }
             $curl_options[CURLOPT_HTTPHEADER] = $header;
         }
