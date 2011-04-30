@@ -325,9 +325,9 @@ class Client
         }
         else
         {
-            foreach ($parameters as $key => $parsed_urlalue)
+            foreach ($parameters as $key => $parsed_urlvalue)
             {
-                $query_parameters[] = rawurlencode($key) . '=' . rawurlencode($parsed_urlalue);
+                $query_parameters[] = rawurlencode($key) . '=' . rawurlencode($parsed_urlvalue);
             }
             sort($query_parameters);
         }
@@ -388,8 +388,8 @@ class Client
         if (is_array($http_headers)) 
         {
             $header = array();
-            foreach($http_headers as $key => $parsed_urlalue) {
-                $header[] = "$key: $parsed_urlalue";
+            foreach($http_headers as $key => $parsed_urlvalue) {
+                $header[] = "$key: $parsed_urlvalue";
             }
             $curl_options[CURLOPT_HTTPHEADER] = $header;
         }
