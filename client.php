@@ -114,7 +114,7 @@ class Client
      * 
      * @param string $client_id Client ID
      * @param string $client_secret Client Secret
-     * @param int    $client_auth (AUTH_TYPE_URI, AUTH_TYPE_AUTHORIZATION, AUTH_TYPE_FORM)
+     * @param int    $client_auth (AUTH_TYPE_URI, AUTH_TYPE_AUTHORIZATION_BASIC, AUTH_TYPE_FORM)
      */
     public function __construct($client_id, $client_secret, $client_auth = self::AUTH_TYPE_URI)
     {
@@ -213,6 +213,7 @@ class Client
                 $parameters['client_secret'] = $this->client_secret;
                 break;
             case self::AUTH_TYPE_AUTHORIZATION_BASIC:
+                $parameters['client_id'] = $this->client_id;
                 $http_headers['Authorization'] = 'Basic ' . base64_encode($this->client_id .  ':' . $this->client_secret);
                 break;
             default:
@@ -237,7 +238,7 @@ class Client
     /**
      * Set the client authentication type
      * 
-     * @param string $client_auth (AUTH_TYPE_URI, AUTH_TYPE_AUTHORIZATION, AUTH_TYPE_FORM)
+     * @param string $client_auth (AUTH_TYPE_URI, AUTH_TYPE_AUTHORIZATION_BASIC, AUTH_TYPE_FORM)
      * @return void
      */
     public function setClientAuthType($client_auth)
