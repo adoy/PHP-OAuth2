@@ -338,8 +338,8 @@ class Client
                     . $timestamp . "\n" 
                     . $nonce . "\n" 
                     . $body_hash . "\n"
-                    . $method . "\n" 
-                    . $parsed_url['hostname'] . "\n"
+                    . $http_method . "\n" 
+                    . $parsed_url['host'] . "\n"
                     . $parsed_url['port'] . "\n"
                     . $parsed_url['path'] . "\n"
                     . implode($query_parameters, "\n")
