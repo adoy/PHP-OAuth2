@@ -225,7 +225,7 @@ class Client
     }
     
     /**
-     * setToken
+     * Set the client access token
      *
      * @param string $token Set the access token
      * @return void
@@ -233,6 +233,17 @@ class Client
     public function setAccessToken($token)
     {
         $this->access_token = $token;
+    }
+    
+    /**
+     * Set the name of the parameter that carry the access token
+     *
+     * @param string $name Token parameter name
+     * @return void
+     */
+    public function setAccessTokenParamName($name)
+    {
+        $this->access_token_param_name = $name;
     }
     
     /**
@@ -278,7 +289,7 @@ class Client
             switch ($this->access_token_type)
             {
                 case self::ACCESS_TOKEN_URI:
-                    $parameters['access_token'] = $this->access_token;
+                    $parameters[$this->access_token_param_name ? $this->access_token_param_name : 'access_token'] = $this->access_token;
                     break;
                 case self::ACCESS_TOKEN_BEARER:
                     $http_headers['Authorization'] = 'Bearer ' . $this->access_token;
@@ -402,7 +413,7 @@ class Client
         $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         curl_close($ch);
         return array(
-            'result' => json_decode($result),
+            'result' => json_decode($result, true),
             'code' => $http_code,
             'content_type' => $content_type
         );

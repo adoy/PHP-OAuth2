@@ -45,12 +45,12 @@ How can I use it ?
 
 require('client.php');
 
-const CLIENT_ID = 'your client id';
+const CLIENT_ID     = 'your client id';
 const CLIENT_SECRET = 'your client secret';
 
-const REDIRECT_URI = 'http://url/of/this.php';
+const REDIRECT_URI           = 'http://url/of/this.php';
 const AUTHORIZATION_ENDPOINT = 'https://graph.facebook.com/oauth/authorize';
-const TOKEN_ENDPOINT = 'https://graph.facebook.com/oauth/access_token';
+const TOKEN_ENDPOINT         = 'https://graph.facebook.com/oauth/access_token';
 
 $client = new OAuth2\Client(CLIENT_ID, CLIENT_SECRET);
 if (!isset($_GET['code']))
@@ -62,9 +62,8 @@ if (!isset($_GET['code']))
 else
 {
     $params = array('code' => $_GET['code'], 'redirect_uri' => REDIRECT_URI);
-    $response = $client->getAccessToken(TOKEN_ENDPOINT, OAuth2Client::GRANT_TYPE_AUTH_CODE, $params);
-    parse_str($response['result'], $val);
-    $client->setAccessToken($val['access_token']);
+    $response = $client->getAccessToken(TOKEN_ENDPOINT, OAuth2\Client::GRANT_TYPE_AUTH_CODE, $params);
+    $client->setAccessToken($response['result']['access_token']);
     $response = $client->fetch('https://graph.facebook.com/me');
-    var_dump($response, json_decode($response['result']));
+    var_dump($response, $response['result']);
 }
