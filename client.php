@@ -402,7 +402,7 @@ class Client
         $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         curl_close($ch);
         return array(
-            'result' => json_decode($result),
+            'result' => json_decode($result, true),
             'code' => $http_code,
             'content_type' => $content_type
         );
