@@ -108,6 +108,13 @@ class Client
      * @var string
      */
     protected $access_token_algorithm = null;
+
+    /**
+     * Access Token Parameter name
+     *
+     * @var string
+     */
+    protected $access_token_param_name = 'access_token';
     
     /**
      * Construct 
@@ -289,7 +296,7 @@ class Client
             switch ($this->access_token_type)
             {
                 case self::ACCESS_TOKEN_URI:
-                    $parameters[$this->access_token_param_name ? $this->access_token_param_name : 'access_token'] = $this->access_token;
+                    $parameters[$this->access_token_param_name] = $this->access_token;
                     break;
                 case self::ACCESS_TOKEN_BEARER:
                     $http_headers['Authorization'] = 'Bearer ' . $this->access_token;
