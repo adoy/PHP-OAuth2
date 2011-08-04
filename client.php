@@ -20,7 +20,7 @@
  * This client is based on the OAuth2 specification draft v2.15
  * http://tools.ietf.org/html/draft-ietf-oauth-v2-15
  *
- * @author      Pierrick Charron <pierrick@webstart.fr> 
+ * @author      Pierrick Charron <pierrick@webstart.fr>, Anis BEREJEB <anis.berejeb@gmail.com> 
  * @version     1.0
  */
 namespace OAuth2;
@@ -34,15 +34,6 @@ class Client
     const AUTH_TYPE_AUTHORIZATION_BASIC = 1;
     const AUTH_TYPE_FORM                = 2;
     
-    /**
-     * Different Grant types
-     */
-    const GRANT_TYPE_AUTH_CODE          = 0;
-    const GRANT_TYPE_PASSWORD           = 1;
-    const GRANT_TYPE_CLIENT_CREDENTIALS = 2;
-    const GRANT_TYPE_REFRESH_TOKEN      = 3;
-    const GRANT_TYPE_CUSTOM             = 4;
-
     /**
      * Different Access token type
      */
@@ -108,14 +99,14 @@ class Client
      * @var string
      */
     protected $access_token_algorithm = null;
-
+    
     /**
      * Access Token Parameter name
      *
      * @var string
      */
     protected $access_token_param_name = 'access_token';
-    
+
     /**
      * Construct 
      * 
@@ -126,7 +117,7 @@ class Client
     public function __construct($client_id, $client_secret, $client_auth = self::AUTH_TYPE_URI)
     {
         if (!extension_loaded('curl')) {
-            throw new Exception('The PHP exention curl must be installed to use this library.');
+            throw new \Exception('The PHP exention curl must be installed to use this library.');
         }
         
         $this->client_id     = $client_id;
@@ -156,61 +147,27 @@ class Client
      * getAccessToken
      *
      * @param string $token_endpoint    Url of the token endpoint
-     * @param int    $grant_type        Grand Type (GRANT_TYPE_AUTH_CODE, GRANT_TYPE_PASSWORD, GRANT_TYPE_CLIENT_CREDENTIALS, GRANT_TYPE_REFRESH_TOKEN, GRANT_TYPE_CUSTOM)
+     * @param int    $grant_type        Grand Type ('authorization_code', 'password', 'client_credentials', 'refresh_token', or a custom code (@see GrantType Classes)
      * @param array  $parameters        Array sent to the server (depend on which grant type you're using)
-     * @param string $custom_grant_url  URL of the custom grant type
      * @return array Array of parameters required by the grant_type (CF SPEC)
      */
-    public function getAccessToken($token_endpoint, $grant_type, array $parameters, $custom_grant_url = null)
+    public function getAccessToken($token_endpoint, $grant_type, array $parameters)
     {
-        switch ($grant_type)
+        if (!$grant_type)
         {
-            case self::GRANT_TYPE_AUTH_CODE:
-                if (!isset($parameters['code']))
-                {
-                    throw new Exception('The \'code\' parameter must be defined for the GRANT_TYPE_AUTH_CODE grant type');
-                } 
-                elseif (!isset($parameters['redirect_uri']))
-                {
-                    throw new Exception('The \'redirect_uri\' parameter must be defined for the GRANT_TYPE_AUTH_CODE grant type');
-                }
-                $parameters['grant_type'] = 'authorization_code';
-                break;
-
-            case self::GRANT_TYPE_PASSWORD:
-                if (!isset($parameters['username']))
-                {
-                    throw new Exception('The \'username\' parameter must be defined for the GRANT_TYPE_PASSWORD grant type');
-                } 
-                elseif (!isset($parameters['password']))
-                {
-                    throw new Exception('The \'password\' parameter must be defined for the GRANT_TYPE_PASSWORD grant type');
-                }
-                $parameters['grant_type'] = 'password';
-                break;
-
-            case self::GRANT_TYPE_CLIENT_CREDENTIALS:
-                $parameters['grant_type'] = 'client_credentials';
-                break;
-
-            case self::GRANT_TYPE_REFRESH_TOKEN:
-                if (!isset($parameters['refresh_token']))
-                {
-                    throw new Exception('The \'refresh_token\' parameter must be defined for the GRANT_TYPE_REFRESH_TOKEN grant type');
-                }
-                $parameters['grant_type'] = 'refresh_token';
-
-                break;
-
-            case self::GRANT_TYPE_CUSTOM:
-                throw new Exception('Grant type custom is not yet implemented');
-                break;
-
-            default:
-                throw new Exception('Unknown grant type.');
-                break;
+            throw new \InvalidArgumentException('grant_type is mandatory.');
         }
-
+        $grantTypeClassName = $this->convertToCamelCase($grant_type);
+        $grantTypeClass =  __NAMESPACE__ . '\GrantType\\' . $grantTypeClassName;
+        if (!class_exists($grantTypeClass)) {
+            throw new \InvalidArgumentException('unknown grant type ' . $grant_type);
+        }
+        $grantTypeObject = new $grantTypeClass();
+        $grantTypeObject->validateParameters($parameters);
+        if (!defined($grantTypeClass . '::GRANT_TYPE')) {
+            throw new \Exception('Unknown constant GRANT_TYPE for class ' . $grantTypeClassName);
+        }
+        $parameters['grant_type'] = $grantTypeClass::GRANT_TYPE;
         $http_headers = array();
         switch ($this->client_auth)
         {
@@ -230,9 +187,9 @@ class Client
 
         return $this->executeRequest($token_endpoint, $parameters, self::HTTP_METHOD_POST, $http_headers);
     }
-    
+
     /**
-     * Set the client access token
+     * setToken
      *
      * @param string $token Set the access token
      * @return void
@@ -241,18 +198,7 @@ class Client
     {
         $this->access_token = $token;
     }
-    
-    /**
-     * Set the name of the parameter that carry the access token
-     *
-     * @param string $name Token parameter name
-     * @return void
-     */
-    public function setAccessTokenParamName($name)
-    {
-        $this->access_token_param_name = $name;
-    }
-    
+
     /**
      * Set the client authentication type
      * 
@@ -263,8 +209,8 @@ class Client
     {
         $this->client_auth = $client_auth;
     }
-    
-    
+
+
     /**
      * Set the access token type
      *
@@ -279,7 +225,7 @@ class Client
         $this->access_token_secret = $secret;
         $this->access_token_algorithm = $algorithm;
     }
-    
+
     /**
      * Fetch a protected ressource
      * 
@@ -361,7 +307,7 @@ class Client
                     . $parsed_url['port'] . "\n"
                     . $parsed_url['path'] . "\n"
                     . implode($query_parameters, "\n")
-        , $this->access_token_secret));
+                    , $this->access_token_secret));
 
         return 'token="' . $this->access_token . '", timestamp="' . $timestamp . '", nonce="' . $nonce . '", signature="' . $signature . '"';
     }
@@ -378,10 +324,10 @@ class Client
     private function executeRequest($url, array $parameters = array(), $http_method = self::HTTP_METHOD_GET, array $http_headers = null)
     {
         $curl_options = array(
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_CUSTOMREQUEST  => $http_method
-        );
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_CUSTOMREQUEST  => $http_method
+                );
 
         switch($http_method)
         {
@@ -420,11 +366,37 @@ class Client
         $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         curl_close($ch);
         return array(
-            'result' => json_decode($result, true),
-            'code' => $http_code,
-            'content_type' => $content_type
-        );
+                'result' => $result,
+                'code' => $http_code,
+                'content_type' => $content_type
+                );
     }
+
+    /**
+     * Set the name of the parameter that carry the access token
+     *
+     * @param string $name Token parameter name
+     * @return void
+     */
+    public function setAccessTokenParamName($name)
+    {
+        $this->access_token_param_name = $name;
+    }
+
+    /**
+     * Converts the class name to camel case
+     * 
+     * @param  mixed  $grant_type  the grant type
+     * @return string
+     */
+    private function convertToCamelCase($grant_type)
+    {
+        $parts = explode('_', $grant_type);
+        array_walk($parts, function(&$item) { $item = ucfirst($item);});
+        return implode('', $parts);
+    }
+
+
 }
 
 class Exception extends \Exception
