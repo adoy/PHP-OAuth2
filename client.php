@@ -41,7 +41,15 @@ class Client
     const ACCESS_TOKEN_BEARER   = 1;
     const ACCESS_TOKEN_OAUTH    = 2;
     const ACCESS_TOKEN_MAC      = 3;
-    
+
+    /**
+    * Different Grant types
+    */
+    const GRANT_TYPE_AUTH_CODE          = 'authorization_code';
+    const GRANT_TYPE_PASSWORD           = 'password';
+    const GRANT_TYPE_CLIENT_CREDENTIALS = 'client_credentials';
+    const GRANT_TYPE_REFRESH_TOKEN      = 'refresh_token';
+
     /**
      * HTTP Methods
      */
@@ -158,7 +166,7 @@ class Client
             throw new \InvalidArgumentException('grant_type is mandatory.');
         }
         $grantTypeClassName = $this->convertToCamelCase($grant_type);
-        $grantTypeClass =  __NAMESPACE__ . '\GrantType\\' . $grantTypeClassName;
+        $grantTypeClass =  __NAMESPACE__ . '\\GrantType\\' . $grantTypeClassName;
         if (!class_exists($grantTypeClass)) {
             throw new \InvalidArgumentException('unknown grant type ' . $grant_type);
         }
