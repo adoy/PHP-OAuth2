@@ -373,8 +373,10 @@ class Client
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         curl_close($ch);
+
+        $json_decode = json_decode($result, true);
         return array(
-                'result' => json_decode($result, true),
+                'result' => (null === $json_decode) ? $result : $json_decode,
                 'code' => $http_code,
                 'content_type' => $content_type
                 );
