@@ -58,6 +58,12 @@ class Client
     const HTTP_METHOD_PUT    = 'PUT';
     const HTTP_METHOD_DELETE = 'DELETE';
     const HTTP_METHOD_HEAD   = 'HEAD';
+    
+    /**
+     * HTTP Form content types
+     */
+    const HTTP_FORM_CONTENT_TYPE_APPLICATION = 0;
+    const HTTP_FORM_CONTENT_TYPE_MULTIPART = 1;
 
     /**
      * Client ID
@@ -193,7 +199,7 @@ class Client
                 break;
         }
 
-        return $this->executeRequest($token_endpoint, $parameters, self::HTTP_METHOD_POST, $http_headers);
+        return $this->executeRequest($token_endpoint, $parameters, self::HTTP_METHOD_POST, $http_headers, self::HTTP_FORM_CONTENT_TYPE_APPLICATION);
     }
 
     /**
@@ -241,9 +247,10 @@ class Client
      * @param array  $parameters Array of parameters
      * @param string $http_method HTTP Method to use (POST, PUT, GET, HEAD, DELETE)
      * @param array  $http_headers HTTP headers
+     * @param int    $form_content_type HTTP form content type to use
      * @return array
      */
-    public function fetch($protected_resource_url, array $parameters = array(), $http_method = self::HTTP_METHOD_GET, array $http_headers = array())
+    public function fetch($protected_resource_url, array $parameters = array(), $http_method = self::HTTP_METHOD_GET, array $http_headers = array(), $form_content_type = self::HTTP_FORM_CONTENT_TYPE_MULTIPART)
     {
         if ($this->access_token)
         {
@@ -266,7 +273,7 @@ class Client
                     break;
             }
         }
-        return $this->executeRequest($protected_resource_url, $parameters, $http_method, $http_headers);
+        return $this->executeRequest($protected_resource_url, $parameters, $http_method, $http_headers, $form_content_type);
     }
 
     /**
@@ -324,12 +331,13 @@ class Client
      * Execute a request (with curl)
      *
      * @param string $url URL
-     * @param mixed $parameters Array of parameters
+     * @param mixed  $parameters Array of parameters
      * @param string $http_method HTTP Method
-     * @param array $http_headers HTTP Headers
+     * @param array  $http_headers HTTP Headers
+     * @param int    $form_content_type HTTP form content type to use
      * @return array 
      */
-    private function executeRequest($url, array $parameters = array(), $http_method = self::HTTP_METHOD_GET, array $http_headers = null)
+    private function executeRequest($url, array $parameters = array(), $http_method = self::HTTP_METHOD_GET, array $http_headers = null, $form_content_type = self::HTTP_FORM_CONTENT_TYPE_MULTIPART)
     {
         $curl_options = array(
                 CURLOPT_RETURNTRANSFER => true,
@@ -343,6 +351,16 @@ class Client
                 $curl_options[CURLOPT_POST] = true;
                 /* No break */
             case self::HTTP_METHOD_PUT:
+                
+                /**
+                 * Passing an array to CURLOPT_POSTFIELDS will encode the data as multipart/form-data, 
+                 * while passing a URL-encoded string will encode the data as application/x-www-form-urlencoded.
+                 * http://php.net/manual/en/function.curl-setopt.php
+                 */
+                if(self::HTTP_FORM_CONTENT_TYPE_APPLICATION === $form_content_type)
+                {
+                    $parameters = http_build_query($parameters);
+                }
                 $curl_options[CURLOPT_POSTFIELDS] = $parameters;
                 break;
             case self::HTTP_METHOD_HEAD:
