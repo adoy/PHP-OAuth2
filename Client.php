@@ -58,6 +58,9 @@ class Client
     const HTTP_METHOD_PUT    = 'PUT';
     const HTTP_METHOD_DELETE = 'DELETE';
     const HTTP_METHOD_HEAD   = 'HEAD';
+    
+    const HTTP_FORM_CONTENT_TYPE_APPLICATION = 0;
+    const HTTP_FORM_CONTENT_TYPE_MULTIPART = 1;
 
     /**
      * Client ID
