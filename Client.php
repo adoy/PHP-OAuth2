@@ -138,6 +138,26 @@ class Client
         $this->client_secret = $client_secret;
         $this->client_auth   = $client_auth;
     }
+
+    /**
+     * Get the client Id
+     *
+     * @return string Client ID
+     */
+    public function getClientId()
+    {
+        return $this->client_id;
+    }
+
+    /**
+     * Get the client Secret
+     * 
+     * @return string Client Secret
+     */
+    public function getClientSecret()
+    {
+        return $this->client_secret;
+    }
     
     /**
      * getAuthenticationUrl
