@@ -20,8 +20,9 @@
  * This client is based on the OAuth2 specification draft v2.15
  * http://tools.ietf.org/html/draft-ietf-oauth-v2-15
  *
- * @author      Pierrick Charron <pierrick@webstart.fr>, Anis BEREJEB <anis.berejeb@gmail.com> 
- * @version     1.0
+ * @author      Pierrick Charron <pierrick@webstart.fr>
+ * @author      Anis Berejeb <anis.berejeb@gmail.com> 
+ * @version     1.1
  */
 namespace OAuth2;
 
@@ -282,14 +283,18 @@ class Client
      * @param int    $form_content_type HTTP form content type to use
      * @return array
      */
-    public function fetch($protected_resource_url, array $parameters = array(), $http_method = self::HTTP_METHOD_GET, array $http_headers = array(), $form_content_type = self::HTTP_FORM_CONTENT_TYPE_MULTIPART)
+    public function fetch($protected_resource_url, $parameters = array(), $http_method = self::HTTP_METHOD_GET, array $http_headers = array(), $form_content_type = self::HTTP_FORM_CONTENT_TYPE_MULTIPART)
     {
         if ($this->access_token)
         {
             switch ($this->access_token_type)
             {
                 case self::ACCESS_TOKEN_URI:
-                    $parameters[$this->access_token_param_name] = $this->access_token;
+                    if (is_array($parameters)) {
+                        $parameters[$this->access_token_param_name] = $this->access_token;
+                    } else {
+                        throw new \Exception('You need to give parameters as array if you want to give the token within the URI.');
+                    }
                     break;
                 case self::ACCESS_TOKEN_BEARER:
                     $http_headers['Authorization'] = 'Bearer ' . $this->access_token;
@@ -316,7 +321,7 @@ class Client
      * @param string $http_method Http Method
      * @return string
      */
-    private function generateMACSignature($url, array $parameters, $http_method)
+    private function generateMACSignature($url, $parameters, $http_method)
     {
         $timestamp = time();
         $nonce = uniqid();
@@ -330,13 +335,20 @@ class Client
 
         if (self::HTTP_METHOD_POST === $http_method || self::HTTP_METHOD_PUT === $http_method)
         {
-            if ($parameters) 
+            if (is_array($parameters) && !empty($parameters)) 
+            {
+                $body_hash = base64_encode(hash($this->access_token_algorithm, http_build_query($parameters)));
+            } 
+            elseif ($parameters) 
             {
                 $body_hash = base64_encode(hash($this->access_token_algorithm, $parameters));
             }
         }
         else
         {
+            if (!is_array($parameters)) {
+                parse_str($parameters, $parameters);
+            }
             foreach ($parameters as $key => $parsed_urlvalue)
             {
                 $query_parameters[] = rawurlencode($key) . '=' . rawurlencode($parsed_urlvalue);
@@ -369,7 +381,7 @@ class Client
      * @param int    $form_content_type HTTP form content type to use
      * @return array 
      */
-    private function executeRequest($url, array $parameters = array(), $http_method = self::HTTP_METHOD_GET, array $http_headers = null, $form_content_type = self::HTTP_FORM_CONTENT_TYPE_MULTIPART)
+    private function executeRequest($url, $parameters = array(), $http_method = self::HTTP_METHOD_GET, array $http_headers = null, $form_content_type = self::HTTP_FORM_CONTENT_TYPE_MULTIPART)
     {
         $curl_options = array(
                 CURLOPT_RETURNTRANSFER => true,
@@ -389,7 +401,7 @@ class Client
                  * while passing a URL-encoded string will encode the data as application/x-www-form-urlencoded.
                  * http://php.net/manual/en/function.curl-setopt.php
                  */
-                if(self::HTTP_FORM_CONTENT_TYPE_APPLICATION === $form_content_type)
+                if(is_array($parameters) && self::HTTP_FORM_CONTENT_TYPE_APPLICATION === $form_content_type)
                 {
                     $parameters = http_build_query($parameters);
                 }
@@ -400,7 +412,11 @@ class Client
                 /* No break */
             case self::HTTP_METHOD_DELETE:
             case self::HTTP_METHOD_GET:
-                $url .= '?' . http_build_query($parameters, null, '&');
+                if (is_array($parameters)) {
+                    $url .= '?' . http_build_query($parameters, null, '&');
+                } elseif ($parameters) {
+                    $url .= '?' . $parameters;
+                }
                 break;
             default:
                 break;
