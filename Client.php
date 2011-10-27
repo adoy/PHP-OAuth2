@@ -182,11 +182,11 @@ class Client
      */
     public function getAuthenticationUrl($auth_endpoint, $redirect_uri, array $extra_parameters = array())
     {
-        $parameters = array_merge($extra_parameters, array(
+        $parameters = array_merge(array(
             'response_type' => 'code',
             'client_id'     => $this->client_id,
             'redirect_uri'  => $redirect_uri
-        ));
+        ), $extra_parameters);
         return $auth_endpoint . '?' . http_build_query($parameters, null, '&');
     }
     
