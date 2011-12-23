@@ -136,6 +136,7 @@ class Client
      * @param string $client_secret Client Secret
      * @param int    $client_auth (AUTH_TYPE_URI, AUTH_TYPE_AUTHORIZATION_BASIC, AUTH_TYPE_FORM)
      * @param string $certificate_file Indicates if we want to use a certificate file to trust the server. Optional, defaults to null.
+     * @return void
      */
     public function __construct($client_id, $client_secret, $client_auth = self::AUTH_TYPE_URI, $certificate_file = null)
     {
@@ -200,8 +201,7 @@ class Client
      */
     public function getAccessToken($token_endpoint, $grant_type, array $parameters)
     {
-        if (!$grant_type)
-        {
+        if (!$grant_type) {
             throw new \InvalidArgumentException('grant_type is mandatory.');
         }
         $grantTypeClassName = $this->convertToCamelCase($grant_type);
@@ -216,8 +216,7 @@ class Client
         }
         $parameters['grant_type'] = $grantTypeClass::GRANT_TYPE;
         $http_headers = array();
-        switch ($this->client_auth)
-        {
+        switch ($this->client_auth) {
             case self::AUTH_TYPE_URI:
             case self::AUTH_TYPE_FORM:
                 $parameters['client_id'] = $this->client_id;
@@ -257,7 +256,6 @@ class Client
         $this->client_auth = $client_auth;
     }
 
-
     /**
      * Set the access token type
      *
@@ -285,10 +283,8 @@ class Client
      */
     public function fetch($protected_resource_url, $parameters = array(), $http_method = self::HTTP_METHOD_GET, array $http_headers = array(), $form_content_type = self::HTTP_FORM_CONTENT_TYPE_MULTIPART)
     {
-        if ($this->access_token)
-        {
-            switch ($this->access_token_type)
-            {
+        if ($this->access_token) {
+            switch ($this->access_token_type) {
                 case self::ACCESS_TOKEN_URI:
                     if (is_array($parameters)) {
                         $parameters[$this->access_token_param_name] = $this->access_token;
@@ -328,45 +324,37 @@ class Client
         $query_parameters = array();
         $body_hash = '';
         $parsed_url = parse_url($url);
-        if (!isset($parsed_url['port'])) 
-        {
+        if (!isset($parsed_url['port'])) {
             $parsed_url['port'] = ($parsed_url['scheme'] == 'https') ? 443 : 80;
         }
 
-        if (self::HTTP_METHOD_POST === $http_method || self::HTTP_METHOD_PUT === $http_method)
-        {
-            if (is_array($parameters) && !empty($parameters)) 
-            {
+        if (self::HTTP_METHOD_POST === $http_method || self::HTTP_METHOD_PUT === $http_method) {
+            if (is_array($parameters) && !empty($parameters)) {
                 $body_hash = base64_encode(hash($this->access_token_algorithm, http_build_query($parameters)));
-            } 
-            elseif ($parameters) 
-            {
+            } elseif ($parameters) {
                 $body_hash = base64_encode(hash($this->access_token_algorithm, $parameters));
             }
-        }
-        else
-        {
+        } else {
             if (!is_array($parameters)) {
                 parse_str($parameters, $parameters);
             }
-            foreach ($parameters as $key => $parsed_urlvalue)
-            {
+            foreach ($parameters as $key => $parsed_urlvalue) {
                 $query_parameters[] = rawurlencode($key) . '=' . rawurlencode($parsed_urlvalue);
             }
             sort($query_parameters);
         }
 
         $signature = base64_encode(hash_hmac($this->access_token_algorithm, 
-                    $this->access_token . "\n"
-                    . $timestamp . "\n" 
-                    . $nonce . "\n" 
-                    . $body_hash . "\n"
-                    . $http_method . "\n" 
-                    . $parsed_url['host'] . "\n"
-                    . $parsed_url['port'] . "\n"
-                    . $parsed_url['path'] . "\n"
-                    . implode($query_parameters, "\n")
-                    , $this->access_token_secret));
+            $this->access_token . "\n"
+            . $timestamp . "\n" 
+            . $nonce . "\n" 
+            . $body_hash . "\n"
+            . $http_method . "\n" 
+            . $parsed_url['host'] . "\n"
+            . $parsed_url['port'] . "\n"
+            . $parsed_url['path'] . "\n"
+            . implode($query_parameters, "\n")
+            , $this->access_token_secret));
 
         return 'token="' . $this->access_token . '", timestamp="' . $timestamp . '", nonce="' . $nonce . '", signature="' . $signature . '"';
     }
@@ -384,13 +372,12 @@ class Client
     private function executeRequest($url, $parameters = array(), $http_method = self::HTTP_METHOD_GET, array $http_headers = null, $form_content_type = self::HTTP_FORM_CONTENT_TYPE_MULTIPART)
     {
         $curl_options = array(
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_SSL_VERIFYPEER => true,
-                CURLOPT_CUSTOMREQUEST  => $http_method
-                );
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_CUSTOMREQUEST  => $http_method
+        );
 
-        switch($http_method)
-        {
+        switch($http_method) {
             case self::HTTP_METHOD_POST:
                 $curl_options[CURLOPT_POST] = true;
                 /* No break */
@@ -401,8 +388,7 @@ class Client
                  * while passing a URL-encoded string will encode the data as application/x-www-form-urlencoded.
                  * http://php.net/manual/en/function.curl-setopt.php
                  */
-                if(is_array($parameters) && self::HTTP_FORM_CONTENT_TYPE_APPLICATION === $form_content_type)
-                {
+                if(is_array($parameters) && self::HTTP_FORM_CONTENT_TYPE_APPLICATION === $form_content_type) {
                     $parameters = http_build_query($parameters);
                 }
                 $curl_options[CURLOPT_POSTFIELDS] = $parameters;
@@ -424,8 +410,7 @@ class Client
 
         $curl_options[CURLOPT_URL] = $url;
 
-        if (is_array($http_headers)) 
-        {
+        if (is_array($http_headers)) {
             $header = array();
             foreach($http_headers as $key => $parsed_urlvalue) {
                 $header[] = "$key: $parsed_urlvalue";
@@ -458,10 +443,10 @@ class Client
         curl_close($ch);
         
         return array(
-                'result' => (null === $json_decode) ? $result : $json_decode,
-                'code' => $http_code,
-                'content_type' => $content_type
-                );
+            'result' => (null === $json_decode) ? $result : $json_decode,
+            'code' => $http_code,
+            'content_type' => $content_type
+        );
     }
 
     /**
@@ -487,8 +472,6 @@ class Client
         array_walk($parts, function(&$item) { $item = ucfirst($item);});
         return implode('', $parts);
     }
-
-
 }
 
 class Exception extends \Exception
