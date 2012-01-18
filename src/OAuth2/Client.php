@@ -25,6 +25,7 @@
  * @version     1.1
  */
 namespace OAuth2;
+use Exception;
 
 class Client
 {
@@ -206,6 +207,10 @@ class Client
         }
         $grantTypeClassName = $this->convertToCamelCase($grant_type);
         $grantTypeClass =  __NAMESPACE__ . '\\GrantType\\' . $grantTypeClassName;
+
+        // use SPL autoloader
+        spl_autoload_call( $grantTypeClass );
+
         if (!class_exists($grantTypeClass)) {
             throw new \InvalidArgumentException('unknown grant type ' . $grant_type);
         }
@@ -472,8 +477,4 @@ class Client
         array_walk($parts, function(&$item) { $item = ucfirst($item);});
         return implode('', $parts);
     }
-}
-
-class Exception extends \Exception
-{
 }
