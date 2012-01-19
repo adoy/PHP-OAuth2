@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<package xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" packagerversion="1.4.10" version="2.0" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0        http://pear.php.net/dtd/tasks-1.0.xsd        http://pear.php.net/dtd/package-2.0        http://pear.php.net/dtd/package-2.0.xsd">
+  <name>OAuth2</name>
+  <channel>private-pear.corneltek.com</channel>
+  <summary>Light PHP wrapper for the OAuth 2.0</summary>
+  <description>Light PHP wrapper for the OAuth 2.0</description>
+  <lead>
+    <name>Charron Pierrick</name>
+    <user/>
+    <email>pierrick@webstart.fr</email>
+    <active>yes</active>
+  </lead>
+  <date>2012-01-19</date>
+  <time>18:04:35</time>
+  <version>
+    <release>0.0.2</release>
+    <api>0.0.2</api>
+  </version>
+  <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+  </stability>
+  <license>PHP</license>
+  <notes>-</notes>
+  <contents>
+    <dir name="/">
+      <file name="src/OAuth2/Client.php" role="php" md5sum="8c9ecd1d9f1d2bb0aec61ba8a406b2fc"/>
+      <file name="src/OAuth2/GrantType/AuthorizationCode.php" role="php" md5sum="9fc7e7d526365fa64730f0401e04a086"/>
+      <file name="src/OAuth2/GrantType/ClientCredentials.php" role="php" md5sum="21b30fbb06d4b67263499d687316ae8b"/>
+      <file name="src/OAuth2/GrantType/IGrantType.php" role="php" md5sum="ee03d4c5bc20f518716fc2c616b4d38d"/>
+      <file name="src/OAuth2/GrantType/Password.php" role="php" md5sum="2c91915df94b6ec6880515c565945870"/>
+      <file name="src/OAuth2/GrantType/RefreshToken.php" role="php" md5sum="484404a0d5fd2213d08b124ba7f85b9b"/>
+    </dir>
+  </contents>
+  <dependencies>
+    <required>
+      <php>
+        <min>5.3</min>
+      </php>
+      <pearinstaller>
+        <min>1.4</min>
+      </pearinstaller>
+    </required>
+  </dependencies>
+  <phprelease>
+    <filelist>
+      <install name="src/OAuth2/Client.php" as="OAuth2/Client.php"/>
+      <install name="src/OAuth2/GrantType/AuthorizationCode.php" as="OAuth2/GrantType/AuthorizationCode.php"/>
+      <install name="src/OAuth2/GrantType/ClientCredentials.php" as="OAuth2/GrantType/ClientCredentials.php"/>
+      <install name="src/OAuth2/GrantType/IGrantType.php" as="OAuth2/GrantType/IGrantType.php"/>
+      <install name="src/OAuth2/GrantType/Password.php" as="OAuth2/GrantType/Password.php"/>
+      <install name="src/OAuth2/GrantType/RefreshToken.php" as="OAuth2/GrantType/RefreshToken.php"/>
+    </filelist>
+  </phprelease>
+</package>

@@ -43,6 +43,12 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU Lesser General Public License for more details.
 
 
+Install through PEAR
+====================
+
+    $ pear install package.xml
+
+
 How can I use it ?
 ==================
 
