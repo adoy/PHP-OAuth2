@@ -443,7 +443,7 @@ class Client
                 'error' => $curl_error
             );
         } else { 
-            $json_decode = json_decode($result, true);
+            $json_decode = json_decode($result);
         }
         curl_close($ch);
         
