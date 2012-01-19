@@ -11,10 +11,10 @@
     <active>yes</active>
   </lead>
   <date>2012-01-19</date>
-  <time>05:33:07</time>
+  <time>18:04:35</time>
   <version>
-    <release>0.0.1</release>
-    <api>0.0.1</api>
+    <release>0.0.2</release>
+    <api>0.0.2</api>
   </version>
   <stability>
     <release>alpha</release>
@@ -24,7 +24,7 @@
   <notes>-</notes>
   <contents>
     <dir name="/">
-      <file name="src/OAuth2/Client.php" role="php" md5sum="f0fe190528f4fc7adc56ea318dfd68c3"/>
+      <file name="src/OAuth2/Client.php" role="php" md5sum="8c9ecd1d9f1d2bb0aec61ba8a406b2fc"/>
       <file name="src/OAuth2/GrantType/AuthorizationCode.php" role="php" md5sum="9fc7e7d526365fa64730f0401e04a086"/>
       <file name="src/OAuth2/GrantType/ClientCredentials.php" role="php" md5sum="21b30fbb06d4b67263499d687316ae8b"/>
       <file name="src/OAuth2/GrantType/IGrantType.php" role="php" md5sum="ee03d4c5bc20f518716fc2c616b4d38d"/>
