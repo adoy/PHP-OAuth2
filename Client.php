@@ -437,10 +437,7 @@ class Client
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         if ($curl_error = curl_error($ch)) {
-            return array(
-                'result' => false,
-                'error' => $curl_error
-            );
+            throw new Exception($curl_error, Exception::CURL_ERROR);
         } else {
             $json_decode = json_decode($result, true);
         }
@@ -481,9 +478,10 @@ class Client
 class Exception extends \Exception
 {
     const CURL_NOT_FOUND                     = 0x01;
-    const GRANT_TYPE_ERROR                   = 0x02;
-    const INVALID_CLIENT_AUTHENTICATION_TYPE = 0x03;
-    const INVALID_ACCESS_TOKEN_TYPE          = 0x04;
+    const CURL_ERROR                         = 0x02;
+    const GRANT_TYPE_ERROR                   = 0x03;
+    const INVALID_CLIENT_AUTHENTICATION_TYPE = 0x04;
+    const INVALID_ACCESS_TOKEN_TYPE          = 0x05;
 }
 
 class InvalidArgumentException extends \InvalidArgumentException
