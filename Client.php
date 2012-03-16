@@ -21,7 +21,7 @@
  * http://tools.ietf.org/html/draft-ietf-oauth-v2-15
  *
  * @author      Pierrick Charron <pierrick@webstart.fr>
- * @author      Anis Berejeb <anis.berejeb@gmail.com> 
+ * @author      Anis Berejeb <anis.berejeb@gmail.com>
  * @version     1.1
  */
 namespace OAuth2;
@@ -34,11 +34,11 @@ class Client
     const AUTH_TYPE_URI                 = 0;
     const AUTH_TYPE_AUTHORIZATION_BASIC = 1;
     const AUTH_TYPE_FORM                = 2;
-    
+
     /**
      * Different Access token type
      */
-    const ACCESS_TOKEN_URI      = 0;   
+    const ACCESS_TOKEN_URI      = 0;
     const ACCESS_TOKEN_BEARER   = 1;
     const ACCESS_TOKEN_OAUTH    = 2;
     const ACCESS_TOKEN_MAC      = 3;
@@ -59,7 +59,7 @@ class Client
     const HTTP_METHOD_PUT    = 'PUT';
     const HTTP_METHOD_DELETE = 'DELETE';
     const HTTP_METHOD_HEAD   = 'HEAD';
-    
+
     /**
      * HTTP Form content types
      */
@@ -68,21 +68,21 @@ class Client
 
     /**
      * Client ID
-     * 
+     *
      * @var string
      */
     protected $client_id = null;
 
     /**
      * Client Secret
-     * 
+     *
      * @var string
      */
     protected $client_secret = null;
 
     /**
      * Client Authentication method
-     * 
+     *
      * @var int
      */
     protected $client_auth = self::AUTH_TYPE_URI;
@@ -114,7 +114,7 @@ class Client
      * @var string
      */
     protected $access_token_algorithm = null;
-    
+
     /**
      * Access Token Parameter name
      *
@@ -124,14 +124,14 @@ class Client
 
     /**
      * The path to the certificate file to use for https connections
-     * 
-     * @var string  Defaults to . 
+     *
+     * @var string  Defaults to .
      */
     protected $certificate_file = null;
 
     /**
-     * Construct 
-     * 
+     * Construct
+     *
      * @param string $client_id Client ID
      * @param string $client_secret Client Secret
      * @param int    $client_auth (AUTH_TYPE_URI, AUTH_TYPE_AUTHORIZATION_BASIC, AUTH_TYPE_FORM)
@@ -141,15 +141,15 @@ class Client
     public function __construct($client_id, $client_secret, $client_auth = self::AUTH_TYPE_URI, $certificate_file = null)
     {
         if (!extension_loaded('curl')) {
-            throw new \Exception('The PHP exention curl must be installed to use this library.');
+            throw new Exception('The PHP exention curl must be installed to use this library.', Exception::CURL_NOT_FOUND);
         }
-        
+
         $this->client_id     = $client_id;
         $this->client_secret = $client_secret;
         $this->client_auth   = $client_auth;
         $this->certificate_file = $certificate_file;
         if (!empty($this->certificate_file)  && !is_file($this->certificate_file)) {
-            throw new \Exception('The certificate file was not found');
+            throw new InvalidArgumentException('The certificate file was not found', InvalidArgumentException::CERTIFICATE_NOT_FOUND);
         }
     }
 
@@ -165,14 +165,14 @@ class Client
 
     /**
      * Get the client Secret
-     * 
+     *
      * @return string Client Secret
      */
     public function getClientSecret()
     {
         return $this->client_secret;
     }
-    
+
     /**
      * getAuthenticationUrl
      *
@@ -190,7 +190,7 @@ class Client
         ), $extra_parameters);
         return $auth_endpoint . '?' . http_build_query($parameters, null, '&');
     }
-    
+
     /**
      * getAccessToken
      *
@@ -202,17 +202,17 @@ class Client
     public function getAccessToken($token_endpoint, $grant_type, array $parameters)
     {
         if (!$grant_type) {
-            throw new \InvalidArgumentException('grant_type is mandatory.');
+            throw new InvalidArgumentException('The grant_type is mandatory.', InvalidArgumentException::INVALID_GRANT_TYPE);
         }
         $grantTypeClassName = $this->convertToCamelCase($grant_type);
         $grantTypeClass =  __NAMESPACE__ . '\\GrantType\\' . $grantTypeClassName;
         if (!class_exists($grantTypeClass)) {
-            throw new \InvalidArgumentException('unknown grant type ' . $grant_type);
+            throw new InvalidArgumentException('Unknown grant type \'' . $grant_type . '\'', InvalidArgumentException::INVALID_GRANT_TYPE);
         }
         $grantTypeObject = new $grantTypeClass();
         $grantTypeObject->validateParameters($parameters);
         if (!defined($grantTypeClass . '::GRANT_TYPE')) {
-            throw new \Exception('Unknown constant GRANT_TYPE for class ' . $grantTypeClassName);
+            throw new Exception('Unknown constant GRANT_TYPE for class ' . $grantTypeClassName, Exception::GRANT_TYPE_ERROR);
         }
         $parameters['grant_type'] = $grantTypeClass::GRANT_TYPE;
         $http_headers = array();
@@ -227,7 +227,7 @@ class Client
                 $http_headers['Authorization'] = 'Basic ' . base64_encode($this->client_id .  ':' . $this->client_secret);
                 break;
             default:
-                throw new Exception('Unknown client auth type.');
+                throw new Exception('Unknown client auth type.', Exception::INVALID_CLIENT_AUTHENTICATION_TYPE);
                 break;
         }
 
@@ -247,7 +247,7 @@ class Client
 
     /**
      * Set the client authentication type
-     * 
+     *
      * @param string $client_auth (AUTH_TYPE_URI, AUTH_TYPE_AUTHORIZATION_BASIC, AUTH_TYPE_FORM)
      * @return void
      */
@@ -273,7 +273,7 @@ class Client
 
     /**
      * Fetch a protected ressource
-     * 
+     *
      * @param string $protected_ressource_url Protected resource URL
      * @param array  $parameters Array of parameters
      * @param string $http_method HTTP Method to use (POST, PUT, GET, HEAD, DELETE)
@@ -289,7 +289,10 @@ class Client
                     if (is_array($parameters)) {
                         $parameters[$this->access_token_param_name] = $this->access_token;
                     } else {
-                        throw new \Exception('You need to give parameters as array if you want to give the token within the URI.');
+                        throw new InvalidArgumentException(
+                            'You need to give parameters as array if you want to give the token within the URI.',
+                            InvalidArgumentException::REQUIRE_PARAMS_AS_ARRAY
+                        );
                     }
                     break;
                 case self::ACCESS_TOKEN_BEARER:
@@ -302,7 +305,7 @@ class Client
                     $http_headers['Authorization'] = 'MAC ' . $this->generateMACSignature($protected_resource_url, $parameters, $http_method);
                     break;
                 default:
-                    throw new Exception('Unknown access token type.');
+                    throw new Exception('Unknown access token type.', Exception::INVALID_ACCESS_TOKEN_TYPE);
                     break;
             }
         }
@@ -310,7 +313,7 @@ class Client
     }
 
     /**
-     * Generate the MAC signature 
+     * Generate the MAC signature
      *
      * @param string $url Called URL
      * @param array  $parameters Parameters
@@ -344,12 +347,12 @@ class Client
             sort($query_parameters);
         }
 
-        $signature = base64_encode(hash_hmac($this->access_token_algorithm, 
+        $signature = base64_encode(hash_hmac($this->access_token_algorithm,
             $this->access_token . "\n"
-            . $timestamp . "\n" 
-            . $nonce . "\n" 
+            . $timestamp . "\n"
+            . $nonce . "\n"
             . $body_hash . "\n"
-            . $http_method . "\n" 
+            . $http_method . "\n"
             . $parsed_url['host'] . "\n"
             . $parsed_url['port'] . "\n"
             . $parsed_url['path'] . "\n"
@@ -367,7 +370,7 @@ class Client
      * @param string $http_method HTTP Method
      * @param array  $http_headers HTTP Headers
      * @param int    $form_content_type HTTP form content type to use
-     * @return array 
+     * @return array
      */
     private function executeRequest($url, $parameters = array(), $http_method = self::HTTP_METHOD_GET, array $http_headers = null, $form_content_type = self::HTTP_FORM_CONTENT_TYPE_MULTIPART)
     {
@@ -382,9 +385,9 @@ class Client
                 $curl_options[CURLOPT_POST] = true;
                 /* No break */
             case self::HTTP_METHOD_PUT:
-                
+
                 /**
-                 * Passing an array to CURLOPT_POSTFIELDS will encode the data as multipart/form-data, 
+                 * Passing an array to CURLOPT_POSTFIELDS will encode the data as multipart/form-data,
                  * while passing a URL-encoded string will encode the data as application/x-www-form-urlencoded.
                  * http://php.net/manual/en/function.curl-setopt.php
                  */
@@ -428,6 +431,7 @@ class Client
         } else {
             // bypass ssl verification
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1);
         }
         $result = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -437,11 +441,11 @@ class Client
                 'result' => false,
                 'error' => $curl_error
             );
-        } else { 
+        } else {
             $json_decode = json_decode($result, true);
         }
         curl_close($ch);
-        
+
         return array(
             'result' => (null === $json_decode) ? $result : $json_decode,
             'code' => $http_code,
@@ -462,7 +466,7 @@ class Client
 
     /**
      * Converts the class name to camel case
-     * 
+     *
      * @param  mixed  $grant_type  the grant type
      * @return string
      */
@@ -476,4 +480,16 @@ class Client
 
 class Exception extends \Exception
 {
+    const CURL_NOT_FOUND                     = 0x01;
+    const GRANT_TYPE_ERROR                   = 0x02;
+    const INVALID_CLIENT_AUTHENTICATION_TYPE = 0x03;
+    const INVALID_ACCESS_TOKEN_TYPE          = 0x04;
+}
+
+class InvalidArgumentException extends \InvalidArgumentException
+{
+    const INVALID_GRANT_TYPE      = 0x01;
+    const CERTIFICATE_NOT_FOUND   = 0x02;
+    const REQUIRE_PARAMS_AS_ARRAY = 0x03;
+    const MISSING_PARAMETER       = 0x04;
 }
