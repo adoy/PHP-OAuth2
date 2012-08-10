@@ -324,42 +324,29 @@ class Client
     {
         $timestamp = time();
         $nonce = uniqid();
-        $query_parameters = array();
-        $body_hash = '';
         $parsed_url = parse_url($url);
-        if (!isset($parsed_url['port'])) {
+        if (!isset($parsed_url['port']))
+        {
             $parsed_url['port'] = ($parsed_url['scheme'] == 'https') ? 443 : 80;
         }
-
-        if (self::HTTP_METHOD_POST === $http_method || self::HTTP_METHOD_PUT === $http_method) {
-            if (is_array($parameters) && !empty($parameters)) {
-                $body_hash = base64_encode(hash($this->access_token_algorithm, http_build_query($parameters)));
+        if ($http_method == self::HTTP_METHOD_GET) {
+            if (is_array($parameters)) {
+                $parsed_url['path'] .= '?' . http_build_query($parameters, null, '&');
             } elseif ($parameters) {
-                $body_hash = base64_encode(hash($this->access_token_algorithm, $parameters));
+                $parsed_url['path'] .= '?' . $parameters;
             }
-        } else {
-            if (!is_array($parameters)) {
-                parse_str($parameters, $parameters);
-            }
-            foreach ($parameters as $key => $parsed_urlvalue) {
-                $query_parameters[] = rawurlencode($key) . '=' . rawurlencode($parsed_urlvalue);
-            }
-            sort($query_parameters);
         }
 
         $signature = base64_encode(hash_hmac($this->access_token_algorithm,
-            $this->access_token . "\n"
-            . $timestamp . "\n"
-            . $nonce . "\n"
-            . $body_hash . "\n"
-            . $http_method . "\n"
-            . $parsed_url['host'] . "\n"
-            . $parsed_url['port'] . "\n"
-            . $parsed_url['path'] . "\n"
-            . implode($query_parameters, "\n")
-            , $this->access_token_secret));
+                    $timestamp . "\n"
+                    . $nonce . "\n"
+                    . $http_method . "\n"
+                    . $parsed_url['path'] . "\n"
+                    . $parsed_url['host'] . "\n"
+                    . $parsed_url['port'] . "\n\n"
+                    , $this->access_token_secret, true));
 
-        return 'token="' . $this->access_token . '", timestamp="' . $timestamp . '", nonce="' . $nonce . '", signature="' . $signature . '"';
+        return 'id="' . $this->access_token . '", ts="' . $timestamp . '", nonce="' . $nonce . '", mac="' . $signature . '"';
     }
 
     /**
