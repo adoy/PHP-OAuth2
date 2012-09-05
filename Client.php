@@ -379,7 +379,7 @@ class Client
                  * http://php.net/manual/en/function.curl-setopt.php
                  */
                 if(is_array($parameters) && self::HTTP_FORM_CONTENT_TYPE_APPLICATION === $form_content_type) {
-                    $parameters = http_build_query($parameters);
+                    $parameters = http_build_query($parameters, null, '&');
                 }
                 $curl_options[CURLOPT_POSTFIELDS] = $parameters;
                 break;
