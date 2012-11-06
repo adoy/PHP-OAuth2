@@ -130,6 +130,20 @@ class Client
     protected $certificate_file = null;
 
     /**
+     * Connect timeout
+     *
+     * @var int
+     */
+    protected $connect_timeout = null;
+
+    /**
+     * Timeout
+     *
+     * @var int
+     */
+    protected $timeout = null;
+
+    /**
      * Construct
      *
      * @param string $client_id Client ID
@@ -379,7 +393,7 @@ class Client
                  * http://php.net/manual/en/function.curl-setopt.php
                  */
                 if(is_array($parameters) && self::HTTP_FORM_CONTENT_TYPE_APPLICATION === $form_content_type) {
-                    $parameters = http_build_query($parameters);
+                    $parameters = http_build_query($parameters, null, '&');
                 }
                 $curl_options[CURLOPT_POSTFIELDS] = $parameters;
                 break;
@@ -406,6 +420,14 @@ class Client
                 $header[] = "$key: $parsed_urlvalue";
             }
             $curl_options[CURLOPT_HTTPHEADER] = $header;
+        }
+
+        if (!is_null($this->connect_timeout)) {
+            $curl_options[CURLOPT_CONNECTTIMEOUT] = $this->connect_timeout;
+        }
+
+        if (!is_null($this->timeout)) {
+            $curl_options[CURLOPT_TIMEOUT] = $this->timeout;
         }
 
         $ch = curl_init();
@@ -459,6 +481,28 @@ class Client
         $parts = explode('_', $grant_type);
         array_walk($parts, function(&$item) { $item = ucfirst($item);});
         return implode('', $parts);
+    }
+
+    /**
+     * Set the curl connect timeout
+     *
+     * @param int $connect_timeout Curl connect timeout in second
+     * @return void
+     */
+    public function setConnectTimeout($connect_timeout)
+    {
+        $this->connect_timeout = $connect_timeout;
+    }
+
+    /**
+     * Set the curl timeout
+     *
+     * @param int $timeout Curl timeout in second
+     * @return void
+     */
+    public function setTimeout($timeout)
+    {
+        $this->timeout = $timeout;
     }
 }
 
