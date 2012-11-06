@@ -130,6 +130,20 @@ class Client
     protected $certificate_file = null;
 
     /**
+     * Connect timeout
+     *
+     * @var int
+     */
+    protected $connect_timeout = null;
+
+    /**
+     * Timeout
+     *
+     * @var int
+     */
+    protected $timeout = null;
+
+    /**
      * Construct
      *
      * @param string $client_id Client ID
@@ -408,6 +422,14 @@ class Client
             $curl_options[CURLOPT_HTTPHEADER] = $header;
         }
 
+        if (!is_null($this->connect_timeout)) {
+            $curl_options[CURLOPT_CONNECTTIMEOUT] = $this->connect_timeout;
+        }
+
+        if (!is_null($this->timeout)) {
+            $curl_options[CURLOPT_TIMEOUT] = $this->timeout;
+        }
+
         $ch = curl_init();
         curl_setopt_array($ch, $curl_options);
         // https handling
@@ -459,6 +481,28 @@ class Client
         $parts = explode('_', $grant_type);
         array_walk($parts, function(&$item) { $item = ucfirst($item);});
         return implode('', $parts);
+    }
+
+    /**
+     * Set the curl connect timeout
+     *
+     * @param int $connect_timeout Curl connect timeout in second
+     * @return void
+     */
+    public function setConnectTimeout($connect_timeout)
+    {
+        $this->connect_timeout = $connect_timeout;
+    }
+
+    /**
+     * Set the curl timeout
+     *
+     * @param int $timeout Curl timeout in second
+     * @return void
+     */
+    public function setTimeout($timeout)
+    {
+        $this->timeout = $timeout;
     }
 }
 
