@@ -130,6 +130,13 @@ class Client
     protected $certificate_file = null;
 
     /**
+     * cURL options
+     *
+     * @var array
+     */
+    protected $curl_options = array();
+
+    /**
      * Construct
      *
      * @param string $client_id Client ID
@@ -254,6 +261,29 @@ class Client
     public function setClientAuthType($client_auth)
     {
         $this->client_auth = $client_auth;
+    }
+
+    /**
+     * Set an option for the curl transfer
+     *
+     * @param int   $option The CURLOPT_XXX option to set
+     * @param mixed $value  The value to be set on option
+     * @return void
+     */
+    public function setCurlOption($option, $value)
+    {
+        $this->curl_options[$option] = $value;
+    }
+
+    /**
+     * Set multiple options for a cURL transfer
+     *
+     * @param array $options An array specifying which options to set and their values
+     * @return void
+     */
+    public function setCurlOptions($options) 
+    {
+        $this->curl_options = array_merge($this->curl_options, $options);
     }
 
     /**
@@ -419,6 +449,9 @@ class Client
             // bypass ssl verification
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1);
+        }
+        if (!empty($this->curl_options)) {
+            curl_setopt_array($this->curl_options);
         }
         $result = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
