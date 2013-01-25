@@ -448,7 +448,7 @@ class Client
         } else {
             // bypass ssl verification
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         }
         if (!empty($this->curl_options)) {
             curl_setopt_array($this->curl_options);
