@@ -1,5 +1,5 @@
 {
-    "name": "adoy/OAuth2",
+    "name": "adoy/oauth2",
     "description": "Light PHP wrapper for the OAuth 2.0 protocol (based on OAuth 2.0 Authorization Protocol draft-ietf-oauth-v2-15)",
     "authors": [
         {
