@@ -451,7 +451,7 @@ class Client
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         }
         if (!empty($this->curl_options)) {
-            curl_setopt_array($this->curl_options);
+            curl_setopt_array($ch, $this->curl_options);
         }
         $result = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
