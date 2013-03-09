@@ -202,7 +202,7 @@ class Client
      * getAccessToken
      *
      * @param string $token_endpoint    Url of the token endpoint
-     * @param int    $grant_type        Grand Type ('authorization_code', 'password', 'client_credentials', 'refresh_token', or a custom code (@see GrantType Classes)
+     * @param int    $grant_type        Grant Type ('authorization_code', 'password', 'client_credentials', 'refresh_token', or a custom code (@see GrantType Classes)
      * @param array  $parameters        Array sent to the server (depend on which grant type you're using)
      * @return array Array of parameters required by the grant_type (CF SPEC)
      */
