@@ -12,8 +12,6 @@
         }
     ],
     "autoload": {
-        "classmap": [
-            "../"
-        ]
+        "psr-0": {"OAuth2": "src/"}
     }
 }
