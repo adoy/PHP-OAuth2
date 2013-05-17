@@ -251,6 +251,16 @@ class Client
     {
         $this->access_token = $token;
     }
+    
+    /**
+     * Check if an access token is already set
+     * 
+     * @return bool
+     */
+    public function hasAccessToken()
+    {
+        return !!$this->access_token;
+    }
 
     /**
      * Set the client authentication type
