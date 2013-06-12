@@ -59,6 +59,7 @@ class Client
     const HTTP_METHOD_PUT    = 'PUT';
     const HTTP_METHOD_DELETE = 'DELETE';
     const HTTP_METHOD_HEAD   = 'HEAD';
+    const HTTP_METHOD_PATCH   = 'PATCH';
 
     /**
      * HTTP Form content types
@@ -402,6 +403,7 @@ class Client
                 $curl_options[CURLOPT_POST] = true;
                 /* No break */
             case self::HTTP_METHOD_PUT:
+			case self::HTTP_METHOD_PATCH:
 
                 /**
                  * Passing an array to CURLOPT_POSTFIELDS will encode the data as multipart/form-data,
