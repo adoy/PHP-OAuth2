@@ -460,13 +460,11 @@ class Client
         $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         if ($curl_error = curl_error($ch)) {
             throw new Exception($curl_error, Exception::CURL_ERROR);
-        } else {
-            $json_decode = json_decode($result, true);
         }
         curl_close($ch);
 
         return array(
-            'result' => (null === $json_decode) ? $result : $json_decode,
+            'result' => $result,
             'code' => $http_code,
             'content_type' => $content_type
         );
