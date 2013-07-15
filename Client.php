@@ -389,7 +389,7 @@ class Client
         );
 
         switch($http_method) {
-            case 'GET':
+            case 'POST':
                 $curl_options[CURLOPT_POST] = true;
                 /* No break */
             case 'PUT':
