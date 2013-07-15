@@ -1,6 +1,5 @@
-Light PHP wrapper for OAuth 2.0
-===============================
-
+Simple OAuth2 client for PHP
+============================
 
 Author & Contact
 ----------------
@@ -72,6 +71,7 @@ else
     $response = $client->fetch('https://graph.facebook.com/me');
     var_dump($response, $response['result']);
 }
+```
 
 Adding a new grand type
 -----------------------
@@ -114,7 +114,7 @@ class MyCustomGrantType implements IGrantType
         }
     }
 }
-
+```
 
 Call the OAuth client getAccessToken with the grantType you defined in the GRANT_TYPE constant, as follows:
 
