@@ -58,13 +58,13 @@ $tokenEndPoint = 'https://graph.facebook.com/oauth/access_token';
 $client = new OAuth2\Client($clientId, $clientSecret);
 if (!isset($_GET['code']))
 {
-    $auth_url = $client->getAuthenticationUrl($authorizationEndPoint, REDIRECT_URI);
+    $auth_url = $client->getAuthenticationUrl($authorizationEndPoint, $redirectUri);
     header('Location: ' . $auth_url);
     die('Redirect');
 }
 else
 {
-    $params = array('code' => $_GET['code'], 'redirect_uri' => REDIRECT_URI);
+    $params = array('code' => $_GET['code'], 'redirect_uri' => $redirectUri);
     $response = $client->getAccessToken($tokenEndPoint, 'authorization_code', $params);
     parse_str($response['result'], $info);
     $client->setAccessToken($info['access_token']);
