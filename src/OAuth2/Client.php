@@ -309,12 +309,9 @@ class Client
                 case self::ACCESS_TOKEN_URI:
                     if (is_array($parameters)) {
                         $parameters[$this->access_token_param_name] = $this->access_token;
-                    } else {
-                        throw new InvalidArgumentException(
-                            'You need to give parameters as array if you want to give the token within the URI.',
-                            InvalidArgumentException::REQUIRE_PARAMS_AS_ARRAY
-                        );
                     }
+                    $url_params = array($this->access_token_param_name => $this->access_token);
+                    $protected_resource_url = $this->appendParamsToUrl($protected_resource_url, $url_params);
                     break;
                 case self::ACCESS_TOKEN_BEARER:
                     $http_headers['Authorization'] = 'Bearer ' . $this->access_token;
@@ -409,11 +406,7 @@ class Client
                 /* No break */
             case 'DELETE':
             case 'GET':
-                if (is_array($parameters)) {
-                    $url .= '?' . http_build_query($parameters, null, '&');
-                } elseif ($parameters) {
-                    $url .= '?' . $parameters;
-                }
+                $url = $this->appendParamsToUrl($url, $parameters);
                 break;
             default:
                 break;
@@ -481,6 +474,33 @@ class Client
         $parts = explode('_', $grant_type);
         array_walk($parts, function(&$item) { $item = ucfirst($item);});
         return implode('', $parts);
+    }
+
+    /**
+     * Appends additional params to the query string of URL
+     *
+     * @param string $url Given URL to append params
+     * @param mixed $parameters Parameters to append, as array or string
+     * @return string
+     */
+    private function appendParamsToUrl($url, $parameters) {
+        $url_query = parse_url($url, PHP_URL_QUERY);
+        $url_query_appended = null;
+        
+        if (is_array($parameters)) {
+            $url_query_appended = http_build_query($parameters, null, '&');
+        } elseif ($parameters) {
+            $url_query_appended = $parameters;
+        }
+        
+        if($url_query_appended) {
+            if(null === $url_query)
+                $url .= '?' . $url_query_appended;
+            else
+                $url .= '&' . $url_query_appended;
+        }
+        
+        return $url;
     }
 }
 
