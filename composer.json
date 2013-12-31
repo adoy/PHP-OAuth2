@@ -1,5 +1,5 @@
 {
-    "name": "adoy/oauth2",
+    "name": "evert/oauth2",
     "description": "Light PHP wrapper for the OAuth 2.0 protocol (based on OAuth 2.0 Authorization Protocol draft-ietf-oauth-v2-15)",
     "license": "LGPL-2.1", 
     "authors": [
@@ -12,9 +12,10 @@
             "email": "anis.berejeb@gmail.com"
         }
     ],
+    "require": {
+        "php": ">=5.3.0"
+    },
     "autoload": {
-        "classmap": [
-            "../"
-        ]
+        "psr-0": {"OAuth2": "src/"}
     }
 }
