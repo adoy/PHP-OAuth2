@@ -52,16 +52,6 @@ class Client
     const GRANT_TYPE_REFRESH_TOKEN      = 'refresh_token';
 
     /**
-     * HTTP Methods
-     */
-    const HTTP_METHOD_GET    = 'GET';
-    const HTTP_METHOD_POST   = 'POST';
-    const HTTP_METHOD_PUT    = 'PUT';
-    const HTTP_METHOD_DELETE = 'DELETE';
-    const HTTP_METHOD_HEAD   = 'HEAD';
-    const HTTP_METHOD_PATCH   = 'PATCH';
-
-    /**
      * HTTP Form content types
      */
     const HTTP_FORM_CONTENT_TYPE_APPLICATION = 0;
@@ -239,7 +229,7 @@ class Client
                 break;
         }
 
-        return $this->executeRequest($token_endpoint, $parameters, self::HTTP_METHOD_POST, $http_headers, self::HTTP_FORM_CONTENT_TYPE_APPLICATION);
+        return $this->executeRequest($token_endpoint, $parameters, 'POST', $http_headers, self::HTTP_FORM_CONTENT_TYPE_APPLICATION);
     }
 
     /**
@@ -312,7 +302,7 @@ class Client
      * @param int    $form_content_type HTTP form content type to use
      * @return array
      */
-    public function fetch($protected_resource_url, $parameters = array(), $http_method = self::HTTP_METHOD_GET, array $http_headers = array(), $form_content_type = self::HTTP_FORM_CONTENT_TYPE_MULTIPART)
+    public function fetch($protected_resource_url, $parameters = array(), $http_method = 'GET', array $http_headers = array(), $form_content_type = self::HTTP_FORM_CONTENT_TYPE_MULTIPART)
     {
         if ($this->access_token) {
             switch ($this->access_token_type) {
@@ -360,7 +350,7 @@ class Client
         {
             $parsed_url['port'] = ($parsed_url['scheme'] == 'https') ? 443 : 80;
         }
-        if ($http_method == self::HTTP_METHOD_GET) {
+        if ($http_method === 'GET') {
             if (is_array($parameters)) {
                 $parsed_url['path'] .= '?' . http_build_query($parameters, null, '&');
             } elseif ($parameters) {
@@ -390,7 +380,7 @@ class Client
      * @param int    $form_content_type HTTP form content type to use
      * @return array
      */
-    private function executeRequest($url, $parameters = array(), $http_method = self::HTTP_METHOD_GET, array $http_headers = null, $form_content_type = self::HTTP_FORM_CONTENT_TYPE_MULTIPART)
+    private function executeRequest($url, $parameters = array(), $http_method = 'GET', array $http_headers = null, $form_content_type = self::HTTP_FORM_CONTENT_TYPE_MULTIPART)
     {
         $curl_options = array(
             CURLOPT_RETURNTRANSFER => true,
@@ -399,12 +389,11 @@ class Client
         );
 
         switch($http_method) {
-            case self::HTTP_METHOD_POST:
+            case 'POST':
                 $curl_options[CURLOPT_POST] = true;
                 /* No break */
-            case self::HTTP_METHOD_PUT:
-			case self::HTTP_METHOD_PATCH:
-
+            case 'PUT':
+            case 'PATCH':
                 /**
                  * Passing an array to CURLOPT_POSTFIELDS will encode the data as multipart/form-data,
                  * while passing a URL-encoded string will encode the data as application/x-www-form-urlencoded.
@@ -415,11 +404,11 @@ class Client
                 }
                 $curl_options[CURLOPT_POSTFIELDS] = $parameters;
                 break;
-            case self::HTTP_METHOD_HEAD:
+            case 'HEAD':
                 $curl_options[CURLOPT_NOBODY] = true;
                 /* No break */
-            case self::HTTP_METHOD_DELETE:
-            case self::HTTP_METHOD_GET:
+            case 'DELETE':
+            case 'GET':
                 if (is_array($parameters)) {
                     $url .= '?' . http_build_query($parameters, null, '&');
                 } elseif ($parameters) {
