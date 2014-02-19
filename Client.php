@@ -395,6 +395,7 @@ class Client
         $curl_options = array(
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_HEADER => true,
             CURLOPT_CUSTOMREQUEST  => $http_method
         );
 
@@ -458,15 +459,22 @@ class Client
         $result = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+
+        $header = substr($result, 0, $header_size);
+        $headers = explode("\n", $header);
+        $response = substr($result, $header_size);
+
         if ($curl_error = curl_error($ch)) {
             throw new Exception($curl_error, Exception::CURL_ERROR);
         } else {
-            $json_decode = json_decode($result, true);
+            $json_decode = json_decode($response, true);
         }
         curl_close($ch);
 
         return array(
-            'result' => (null === $json_decode) ? $result : $json_decode,
+            'result' => (null === $json_decode) ? $response : $json_decode,
+            'headers' => $headers,
             'code' => $http_code,
             'content_type' => $content_type
         );
