@@ -12,9 +12,10 @@
             "email": "anis.berejeb@gmail.com"
         }
     ],
+    "require": {
+        "php": ">=5.3.0"
+    },
     "autoload": {
-        "classmap": [
-            "../"
-        ]
+        "psr-0": {"OAuth2": "src/"}
     }
 }
