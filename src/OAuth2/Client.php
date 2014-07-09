@@ -320,10 +320,19 @@ class Client
                     if (is_array($parameters)) {
                         $parameters[$this->access_token_param_name] = $this->access_token;
                     } else {
-                        throw new InvalidArgumentException(
-                            'You need to give parameters as array if you want to give the token within the URI.',
-                            InvalidArgumentException::REQUIRE_PARAMS_AS_ARRAY
-                        );
+                    	$throwexception = true; 
+                    	
+                    	$testparams = json_decode($parameters, true);
+        		if (array_key_exists($this->access_token_param_name, $testparams)) {
+            			$throwexception = false;
+        		}                    	
+                    	
+                    	if ($throwexception) {
+	                        throw new InvalidArgumentException(
+	                            'You need to give parameters as array if you want to give the token within the URI.',
+	                            InvalidArgumentException::REQUIRE_PARAMS_AS_ARRAY
+	                        );
+						}
                     }
                     break;
                 case self::ACCESS_TOKEN_BEARER:
