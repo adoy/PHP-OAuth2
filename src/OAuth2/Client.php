@@ -332,7 +332,7 @@ class Client
 	                            'You need to give parameters as array if you want to give the token within the URI.',
 	                            InvalidArgumentException::REQUIRE_PARAMS_AS_ARRAY
 	                        );
-						}
+			}
                     }
                     break;
                 case self::ACCESS_TOKEN_BEARER:
