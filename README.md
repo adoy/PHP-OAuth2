@@ -1,7 +1,7 @@
-                    ___________________________________
-  
-                    Light PHP wrapper for the OAuth 2.0
-                    ___________________________________
+                            ___________________________________
+                            
+                            Light PHP wrapper for the OAuth 2.0
+                            ___________________________________
 
 
 AUTHOR & CONTACT
@@ -46,6 +46,7 @@ See the GNU Lesser General Public License for more details.
 How can I use it ?
 ==================
 
+``` php
 require('client.php');
 require('GrantType/IGrantType.php');
 require('GrantType/AuthorizationCode.php');
@@ -73,12 +74,14 @@ else
     $response = $client->fetch('https://graph.facebook.com/me');
     var_dump($response, $response['result']);
 }
+```
 
 How can I add a new Grant Type ? 
 ================================
 Simply write a new class in the namespace OAuth2\GrantType. You can place the class file under GrantType. 
 Here is an example :
 
+``` php
 namespace OAuth2\GrantType;
 
 /**
@@ -114,4 +117,4 @@ class MyCustomGrantType implements IGrantType
 
 call the OAuth client getAccessToken with the grantType you defined in the GRANT_TYPE constant, As following : 
 $response = $client->getAccessToken(TOKEN_ENDPOINT, 'my_custom_grant_type', $params);
-
+```
