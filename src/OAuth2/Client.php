@@ -254,6 +254,16 @@ class Client
     }
 
     /**
+     * Check if there is an access token present
+     *
+     * @return bool Whether the access token is present
+     */
+    public function hasAccessToken()
+    {
+        return !!$this->access_token;
+    }
+
+    /**
      * Set the client authentication type
      *
      * @param string $client_auth (AUTH_TYPE_URI, AUTH_TYPE_AUTHORIZATION_BASIC, AUTH_TYPE_FORM)
