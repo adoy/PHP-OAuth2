@@ -46,7 +46,7 @@ See the GNU Lesser General Public License for more details.
 How can I use it ?
 ==================
 
-require('client.php');
+require('Client.php');
 require('GrantType/IGrantType.php');
 require('GrantType/AuthorizationCode.php');
 
