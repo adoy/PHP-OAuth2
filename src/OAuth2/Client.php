@@ -420,7 +420,7 @@ class Client
                 /* No break */
             case self::HTTP_METHOD_DELETE:
             case self::HTTP_METHOD_GET:
-                if (is_array($parameters)) {
+                if (is_array($parameters) && count($parameters) > 0) {
                     $url .= '?' . http_build_query($parameters, null, '&');
                 } elseif ($parameters) {
                     $url .= '?' . $parameters;
