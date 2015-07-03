@@ -208,7 +208,7 @@ class Client
      * @param array  $extra_headers     Array of extra headers
      * @return array Array of parameters required by the grant_type (CF SPEC)
      */
-    public function getAccessToken($token_endpoint, $grant_type, array $parameters, array $extra_headers = null)
+    public function getAccessToken($token_endpoint, $grant_type, array $parameters, array $extra_headers = array())
     {
         if (!$grant_type) {
             throw new InvalidArgumentException('The grant_type is mandatory.', InvalidArgumentException::INVALID_GRANT_TYPE);
@@ -224,7 +224,7 @@ class Client
             throw new Exception('Unknown constant GRANT_TYPE for class ' . $grantTypeClassName, Exception::GRANT_TYPE_ERROR);
         }
         $parameters['grant_type'] = $grantTypeClass::GRANT_TYPE;
-        $http_headers = is_array($extra_headers) ? $extra_headers : array();
+        $http_headers = $extra_headers;
         switch ($this->client_auth) {
             case self::AUTH_TYPE_URI:
             case self::AUTH_TYPE_FORM:
