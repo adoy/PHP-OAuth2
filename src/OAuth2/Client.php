@@ -205,9 +205,10 @@ class Client
      * @param string $token_endpoint    Url of the token endpoint
      * @param int    $grant_type        Grant Type ('authorization_code', 'password', 'client_credentials', 'refresh_token', or a custom code (@see GrantType Classes)
      * @param array  $parameters        Array sent to the server (depend on which grant type you're using)
+     * @param array  $extra_headers     Array of extra headers
      * @return array Array of parameters required by the grant_type (CF SPEC)
      */
-    public function getAccessToken($token_endpoint, $grant_type, array $parameters)
+    public function getAccessToken($token_endpoint, $grant_type, array $parameters, array $extra_headers = array())
     {
         if (!$grant_type) {
             throw new InvalidArgumentException('The grant_type is mandatory.', InvalidArgumentException::INVALID_GRANT_TYPE);
@@ -223,7 +224,7 @@ class Client
             throw new Exception('Unknown constant GRANT_TYPE for class ' . $grantTypeClassName, Exception::GRANT_TYPE_ERROR);
         }
         $parameters['grant_type'] = $grantTypeClass::GRANT_TYPE;
-        $http_headers = array();
+        $http_headers = $extra_headers;
         switch ($this->client_auth) {
             case self::AUTH_TYPE_URI:
             case self::AUTH_TYPE_FORM:
@@ -292,7 +293,7 @@ class Client
      * @param array $options An array specifying which options to set and their values
      * @return void
      */
-    public function setCurlOptions($options) 
+    public function setCurlOptions($options)
     {
         $this->curl_options = array_merge($this->curl_options, $options);
     }
