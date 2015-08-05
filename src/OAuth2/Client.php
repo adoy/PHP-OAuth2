@@ -406,7 +406,8 @@ class Client
         $curl_options = array(
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_CUSTOMREQUEST  => $http_method
+            CURLOPT_CUSTOMREQUEST  => $http_method,
+            CURLOPT_SSLVERSION => 3
         );
 
         switch($http_method) {
