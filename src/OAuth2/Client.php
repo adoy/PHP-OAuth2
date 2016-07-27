@@ -441,10 +441,28 @@ class Client
                 /* No break */
             case self::HTTP_METHOD_DELETE:
             case self::HTTP_METHOD_GET:
-                if (is_array($parameters) && count($parameters) > 0) {
-                    $url .= '?' . http_build_query($parameters, null, '&');
-                } elseif ($parameters) {
-                    $url .= '?' . $parameters;
+                if ($parameters) {
+                    //Remove any trailing question marks or ampersands
+                    if (substr($url, -1) == '?') {
+                        $url = substr($url, 0, mb_strlen($url) - 1);
+                    } else {
+                        if (substr($url, -1) == '&') {
+                            $url = substr($url, 0, mb_strlen($url) - 1);
+                        }
+                    }
+                    //Check to see if there are existing parameters in the URL
+                    //We want to add the appropriate character to start adding our own params
+                    parse_str(parse_url($url, PHP_URL_QUERY), $existingParams);
+                    if (sizeof($existingParams)) {
+                        $url .= '&';
+                    } else {
+                        $url .= '?';
+                    }
+                    if (is_array($parameters) && count($parameters) > 0) {
+                        $url .= http_build_query($parameters, null, '&');
+                    } else {
+                        $url .= $parameters;
+                    }
                 }
                 break;
             default:
