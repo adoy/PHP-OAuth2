@@ -415,7 +415,8 @@ class Client
         $curl_options = array(
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_CUSTOMREQUEST  => $http_method
+            CURLOPT_CUSTOMREQUEST  => $http_method,
+            CURLOPT_HEADER => true,
         );
 
         switch($http_method) {
@@ -478,17 +479,25 @@ class Client
         $result = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+
+        //Split result into body and headers
+        list($headers, $body) = explode("\r\n\r\n", $result, 2);
+
+        //Parse headers to return
+        $headers = http_parse_headers($headers);
+
         if ($curl_error = curl_error($ch)) {
             throw new Exception($curl_error, Exception::CURL_ERROR);
         } else {
-            $json_decode = json_decode($result, true);
+            $json_decode = json_decode($body, true);
         }
         curl_close($ch);
 
         return array(
-            'result' => (null === $json_decode) ? $result : $json_decode,
+            'result' => (null === $json_decode) ? $body : $json_decode,
             'code' => $http_code,
-            'content_type' => $content_type
+            'content_type' => $content_type,
+            'headers' => $headers,
         );
     }
 
@@ -532,4 +541,37 @@ class InvalidArgumentException extends \InvalidArgumentException
     const CERTIFICATE_NOT_FOUND   = 0x02;
     const REQUIRE_PARAMS_AS_ARRAY = 0x03;
     const MISSING_PARAMETER       = 0x04;
+}
+
+//http://php.net/manual/en/function.http-parse-headers.php#112986
+if (!function_exists('http_parse_headers')) {
+    function http_parse_headers($raw_headers) {
+        $headers = array();
+        $key = '';
+
+        foreach(explode("\n", $raw_headers) as $i => $h) {
+            $h = explode(':', $h, 2);
+
+            if (isset($h[1])) {
+                if (!isset($headers[$h[0]]))
+                    $headers[$h[0]] = trim($h[1]);
+                elseif (is_array($headers[$h[0]])) {
+                    $headers[$h[0]] = array_merge($headers[$h[0]], array(trim($h[1])));
+                }
+                else {
+                    $headers[$h[0]] = array_merge(array($headers[$h[0]]), array(trim($h[1])));
+                }
+
+                $key = $h[0];
+            }
+            else {
+                if (substr($h[0], 0, 1) == "\t")
+                    $headers[$key] .= "\r\n\t".trim($h[0]);
+                elseif (!$key)
+                    $headers[0] = trim($h[0]);
+            }
+        }
+
+        return $headers;
+    }
 }
