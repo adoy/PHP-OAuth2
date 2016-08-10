@@ -472,6 +472,7 @@ class Client
         $curl_options[CURLOPT_URL] = $url;
 
         if (is_array($http_headers)) {
+            $http_headers['Expect'] = '';
             $header = array();
             foreach($http_headers as $key => $parsed_urlvalue) {
                 $header[] = "$key: $parsed_urlvalue";
