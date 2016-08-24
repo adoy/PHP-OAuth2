@@ -24,7 +24,7 @@
  * @author      Anis Berejeb <anis.berejeb@gmail.com>
  * @version     1.3.1-dev
  */
-namespace OAuth2;
+namespace Adoy\OAuth2;
 
 class Client
 {
