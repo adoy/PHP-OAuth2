@@ -420,6 +420,7 @@ class Client
         );
 
         switch($http_method) {
+            case self::HTTP_METHOD_DELETE:
             case self::HTTP_METHOD_POST:
                 $curl_options[CURLOPT_POST] = true;
                 /* No break */
@@ -439,7 +440,6 @@ class Client
             case self::HTTP_METHOD_HEAD:
                 $curl_options[CURLOPT_NOBODY] = true;
                 /* No break */
-            case self::HTTP_METHOD_DELETE:
             case self::HTTP_METHOD_GET:
                 if ($parameters) {
                     //Remove any trailing question marks or ampersands
