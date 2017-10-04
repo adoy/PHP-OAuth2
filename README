@@ -68,7 +68,7 @@ else
 {
     $params = array('code' => $_GET['code'], 'redirect_uri' => REDIRECT_URI);
     $response = $client->getAccessToken(TOKEN_ENDPOINT, 'authorization_code', $params);
-    parse_str($response['result'], $info);
+    $info = $response['result'];
     $client->setAccessToken($info['access_token']);
     $response = $client->fetch('https://graph.facebook.com/me');
     var_dump($response, $response['result']);
