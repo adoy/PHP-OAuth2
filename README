@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fadoy%2FPHP-OAuth2.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fadoy%2FPHP-OAuth2?ref=badge_shield)
+
                     ___________________________________
   
                     Light PHP wrapper for the OAuth 2.0
@@ -115,3 +117,7 @@ class MyCustomGrantType implements IGrantType
 call the OAuth client getAccessToken with the grantType you defined in the GRANT_TYPE constant, As following : 
 $response = $client->getAccessToken(TOKEN_ENDPOINT, 'my_custom_grant_type', $params);
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fadoy%2FPHP-OAuth2.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fadoy%2FPHP-OAuth2?ref=badge_large)
