@@ -1,50 +1,14 @@
-                    ___________________________________
-  
-                    Light PHP wrapper for the OAuth 2.0
-                    ___________________________________
+# Light PHP wrapper for the OAuth 2.0
+
+[![Latest Stable Version](https://poser.pugx.org/adoy/fastcgi-client/v/stable)](https://packagist.org/packages/adoy/fastcgi-client)
+[![GitHub](https://img.shields.io/github/license/adoy/PHP-OAuth2)](LICENSE)
+[![Total Downloads](https://poser.pugx.org/adoy/fastcgi-client/downloads)](https://packagist.org/packages/adoy/fastcgi-client)
 
 
-AUTHOR & CONTACT
-================
+## How can I use it ?
 
-Charron Pierrick
-    - pierrick@webstart.fr
-
-Berejeb Anis
-    - anis.berejeb@gmail.com
-
-    
-DOCUMENTATION & DOWNLOAD
-========================
-
-Latest version is available on github at :
-    - https://github.com/adoy/PHP-OAuth2
-
-Documentation can be found on : 
-    - https://github.com/adoy/PHP-OAuth2
-
-
-LICENSE
-=======
-
-This Code is released under the GNU LGPL
-
-Please do not change the header of the file(s).
-
-This library is free software; you can redistribute it and/or modify it 
-under the terms of the GNU Lesser General Public License as published 
-by the Free Software Foundation; either version 2 of the License, or 
-(at your option) any later version.
-
-This library is distributed in the hope that it will be useful, but 
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU Lesser General Public License for more details.
-
-
-How can I use it ?
-==================
+```php
+<?php
 
 require('Client.php');
 require('GrantType/IGrantType.php');
@@ -73,29 +37,33 @@ else
     $response = $client->fetch('https://graph.facebook.com/me');
     var_dump($response, $response['result']);
 }
+```
 
-How can I add a new Grant Type ? 
-================================
-Simply write a new class in the namespace OAuth2\GrantType. You can place the class file under GrantType. 
+## How can I add a new Grant Type ?
+
+Simply write a new class in the namespace OAuth2\GrantType. You can place the class file under GrantType.
 Here is an example :
+
+```php
+<?php
 
 namespace OAuth2\GrantType;
 
 /**
- * MyCustomGrantType Grant Type 
+ * MyCustomGrantType Grant Type
  */
 class MyCustomGrantType implements IGrantType
 {
     /**
      * Defines the Grant Type
-     * 
-     * @var string  Defaults to 'my_custom_grant_type'. 
+     *
+     * @var string  Defaults to 'my_custom_grant_type'.
      */
     const GRANT_TYPE = 'my_custom_grant_type';
 
     /**
      * Adds a specific Handling of the parameters
-     * 
+     *
      * @return array of Specific parameters to be sent.
      * @param  mixed  $parameters the parameters array (passed by reference)
      */
@@ -111,7 +79,27 @@ class MyCustomGrantType implements IGrantType
         }
     }
 }
+```
 
-call the OAuth client getAccessToken with the grantType you defined in the GRANT_TYPE constant, As following : 
+call the OAuth client getAccessToken with the grantType you defined in the GRANT_TYPE constant, As following :
+
+```
 $response = $client->getAccessToken(TOKEN_ENDPOINT, 'my_custom_grant_type', $params);
+```
 
+## LICENSE
+
+This Code is released under the GNU LGPL
+
+Please do not change the header of the file(s).
+
+This library is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published
+by the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.
+
+See the GNU Lesser General Public License for more details.
