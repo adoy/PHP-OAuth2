@@ -1,6 +1,6 @@
 {
-    "name": "adoy/oauth2",
-    "description": "Light PHP wrapper for the OAuth 2.0 protocol (based on OAuth 2.0 Authorization Protocol draft-ietf-oauth-v2-15)",
+    "name": "tlshaheen/oauth2",
+    "description": "Light PHP wrapper for the OAuth 2.0 protocol (based on OAuth 2.0 Authorization Protocol draft-ietf-oauth-v2-15). Original source at adoy/oauth2",
     "license": "LGPL-2.1", 
     "authors": [
         {
@@ -10,6 +10,10 @@
         {
             "name": "Berejeb Anis",
             "email": "anis.berejeb@gmail.com"
+        },
+        {
+            "name": "Luke Shaheen",
+            "email": "tshaheen07@hotmail.com"
         }
     ],
     "require": {
