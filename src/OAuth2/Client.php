@@ -467,8 +467,7 @@ class Client
             curl_setopt_array($ch, $this->curl_options);
         }
         $result = curl_exec($ch);
-        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        $curl_info = curl_getinfo($ch);
         if ($curl_error = curl_error($ch)) {
             throw new Exception($curl_error, Exception::CURL_ERROR);
         } else {
@@ -478,8 +477,7 @@ class Client
 
         return array(
             'result' => (null === $json_decode) ? $result : $json_decode,
-            'code' => $http_code,
-            'content_type' => $content_type
+            'meta' => $curl_info
         );
     }
 
