@@ -196,7 +196,7 @@ class Client
             'client_id'     => $this->client_id,
             'redirect_uri'  => $redirect_uri
         ), $extra_parameters);
-        return $auth_endpoint . '?' . http_build_query($parameters, null, '&');
+        return $auth_endpoint . '?' . http_build_query($parameters, '', '&');
     }
 
     /**
