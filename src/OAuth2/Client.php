@@ -196,7 +196,7 @@ class Client
             'client_id'     => $this->client_id,
             'redirect_uri'  => $redirect_uri
         ), $extra_parameters);
-        return $auth_endpoint . '?' . http_build_query($parameters, null, '&');
+        return $auth_endpoint . '?' . http_build_query($parameters, '', '&');
     }
 
     /**
@@ -373,7 +373,7 @@ class Client
         }
         if ($http_method == self::HTTP_METHOD_GET) {
             if (is_array($parameters)) {
-                $parsed_url['path'] .= '?' . http_build_query($parameters, null, '&');
+                $parsed_url['path'] .= '?' . http_build_query($parameters, '', '&');
             } elseif ($parameters) {
                 $parsed_url['path'] .= '?' . $parameters;
             }
@@ -422,7 +422,7 @@ class Client
                  * http://php.net/manual/en/function.curl-setopt.php
                  */
                 if(is_array($parameters) && self::HTTP_FORM_CONTENT_TYPE_APPLICATION === $form_content_type) {
-                    $parameters = http_build_query($parameters, null, '&');
+                    $parameters = http_build_query($parameters, '', '&');
                 }
                 $curl_options[CURLOPT_POSTFIELDS] = $parameters;
                 break;
@@ -432,7 +432,7 @@ class Client
             case self::HTTP_METHOD_DELETE:
             case self::HTTP_METHOD_GET:
                 if (is_array($parameters) && count($parameters) > 0) {
-                    $url .= '?' . http_build_query($parameters, null, '&');
+                    $url .= '?' . http_build_query($parameters, '', '&');
                 } elseif ($parameters) {
                     $url .= '?' . $parameters;
                 }
